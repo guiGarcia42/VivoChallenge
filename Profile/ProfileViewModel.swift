@@ -20,7 +20,7 @@ class ProfileViewModel: ObservableObject {
     
     init(service: ProfileService) {
         self.service = service
-        self.user = UserModel(fullName: "", cpf: "", phone: "", email: "", address: "")
+        self.user = UserModel(fullName: "", cpf: "", phone: "", email: "", address: "", password: "")
         bind()
         fetchUserData()
     }
@@ -66,8 +66,6 @@ class ProfileViewModel: ObservableObject {
     
     // Handle logout and reset user data
     func logout(isLoggedIn: Binding<Bool>) {
-        // Reset user data
-        self.user = UserModel(fullName: "", cpf: "", phone: "", email: "", address: "")
         // Trigger logout and set isLoggedIn to false
         isLoggedIn.wrappedValue = false
     }

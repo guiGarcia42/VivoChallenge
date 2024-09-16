@@ -9,7 +9,7 @@ import SwiftUI
 
 struct StartupView: View {
     
-    @State private var txtFieldEmail: String = ""
+    @State private var txtFieldPhone: String = ""
     @State private var txtFieldPassword: String = ""
     @State private var shouldNavigate: Bool = false
     
@@ -36,8 +36,8 @@ struct StartupView: View {
                 .font(.system(size: 24))
             
             CustomTextField(
-                inputText: $txtFieldEmail,
-                leadingIcon: "envelope"
+                inputText: $txtFieldPhone,
+                leadingIcon: "phone"
             )
             
             CustomTextField(
@@ -51,12 +51,11 @@ struct StartupView: View {
             Spacer()
             
             Button {
-                vm.validateAndLogin(email: txtFieldEmail, password: txtFieldPassword) {
+                vm.validateAndLogin(phone: txtFieldPhone, password: txtFieldPassword) {
                     withAnimation {
-                        isLoggedIn = true
+                        isLoggedIn = true // Log in and navigate to the main view
                     }
                 }
-                
             } label: {
                 Text("Log in")
                     .foregroundColor(.white)

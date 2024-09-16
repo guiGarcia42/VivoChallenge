@@ -10,12 +10,12 @@ import SwiftUI
 struct ProfileView: View {
     
     @StateObject var vm: ProfileViewModel
-        @Binding var isLoggedIn: Bool // Binding to track login state
-
-        init(vm: ProfileViewModel, isLoggedIn: Binding<Bool>) {
-            _vm = StateObject(wrappedValue: vm)
-            _isLoggedIn = isLoggedIn
-        }
+    @Binding var isLoggedIn: Bool // Binding to track login state
+    
+    init(vm: ProfileViewModel, isLoggedIn: Binding<Bool>) {
+        _vm = StateObject(wrappedValue: vm)
+        _isLoggedIn = isLoggedIn
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -62,11 +62,13 @@ struct ProfileView: View {
                 ProfileInfoRow(title: "Telefone", value: vm.user.phone)
                 
                 if vm.isEditing {
-                    EditableProfileInfoRow(title: "Email", value: $vm.user.email)
                     EditableProfileInfoRow(title: "Endereço", value: $vm.user.address)
+                    EditableProfileInfoRow(title: "Email", value: $vm.user.email)
+                    EditableProfileInfoRow(title: "Senha", value: $vm.user.password, isSecure: true)
                 } else {
-                    ProfileInfoRow(title: "Email", value: vm.user.email)
                     ProfileInfoRow(title: "Endereço", value: vm.user.address)
+                    ProfileInfoRow(title: "Email", value: vm.user.email)
+                    ProfileInfoRow(title: "Senha", value: vm.user.password)
                 }
             }
             
@@ -75,9 +77,7 @@ struct ProfileView: View {
             if vm.isSaving {
                 HStack {
                     Spacer()
-                    
-                    ProgressView("Salvando dados...") // Show saving indicator
-                    
+                    ProgressView("Salvando dados...")
                     Spacer()
                 }
             } else {
@@ -104,6 +104,7 @@ struct ProfileView: View {
                 }
                 .background(Color("vivo_purple"))
                 .cornerRadius(16)
+                .padding(.bottom, 20)
             }
         }
         .padding(.horizontal, 20)
@@ -118,9 +119,18 @@ struct ProfileInfoRow: View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.system(size: 16))
-            Text(value)
-                .font(.system(size: 14))
-                .foregroundColor(.gray)
+            
+            // Check if the title is "Senha" (password), display secured text
+            if title == "Senha" {
+                Text(String(repeating: "•", count: value.count))
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
+            } else {
+                Text(value)
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
+            }
+            
             Divider()
         }
     }
@@ -129,18 +139,45 @@ struct ProfileInfoRow: View {
 struct EditableProfileInfoRow: View {
     let title: String
     @Binding var value: String
+    @State private var isPasswordVisible: Bool = false // Track password visibility
+    
+    var isSecure: Bool = false // To determine if it's a password field
     
     var body: some View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.system(size: 16))
-            TextField("Enter \(title.lowercased())", text: $value)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .font(.system(size: 14))
+            
+            if isSecure {
+                HStack {
+                    if isPasswordVisible {
+                        TextField("Enter \(title.lowercased())", text: $value)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .font(.system(size: 14))
+                    } else {
+                        SecureField("Enter \(title.lowercased())", text: $value)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .font(.system(size: 14))
+                    }
+                    
+                    Button(action: {
+                        isPasswordVisible.toggle() // Toggle visibility
+                    }) {
+                        Image(systemName: isPasswordVisible ? "eye" : "eye.slash")
+                            .foregroundColor(.gray)
+                    }
+                }
+            } else {
+                TextField("Enter \(title.lowercased())", text: $value)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .font(.system(size: 14))
+            }
+            
             Divider()
         }
     }
 }
+
 struct ProfileViewPreviews: PreviewProvider {
     static var previews: some View {
         ProfileView(vm: ProfileViewModel(service: ProfileService()), isLoggedIn: .constant(true))

@@ -20,8 +20,8 @@ class StartupViewModel: ObservableObject {
     }
     
     // Login user and handle result using Combine
-    func loginUser(email: String, password: String, completionHandler: @escaping(Result<Void, Error>) -> Void) {
-        authHandler.performLogin(email: email, password: password)
+    func loginUser(phone: String, password: String, completionHandler: @escaping(Result<Void, Error>) -> Void) {
+        authHandler.performLogin(phone: phone, password: password)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:
@@ -46,14 +46,14 @@ class StartupViewModel: ObservableObject {
             .store(in: &cancellables) // Store the subscription
     }
     
-    func validateAndLogin(email: String, password: String, onLoginSuccess: @escaping () -> Void) {
-        // Validate the email and password fields
-        let isEmailValid = !email.isEmpty && email.contains("@") // Basic email validation
+    func validateAndLogin(phone: String, password: String, onLoginSuccess: @escaping () -> Void) {
+        // Validate the phone and password fields
+        let isPhoneValid = !phone.isEmpty && phone.count >= 10 // Basic phone validation (assuming 10+ digits)
         isPasswordValid = !password.isEmpty && password.count >= 6 // Password must be at least 6 characters
         
         // Proceed if both validations are successful
-        if isEmailValid && isPasswordValid {
-            loginUser(email: email, password: password) { result in
+        if isPhoneValid && isPasswordValid {
+            loginUser(phone: phone, password: password) { result in
                 switch result {
                 case .success:
                     DispatchQueue.main.async {

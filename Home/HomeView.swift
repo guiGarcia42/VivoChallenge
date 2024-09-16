@@ -20,7 +20,7 @@ struct HomeView: View {
                         .frame(width: 23, height: 31)
                         .scaledToFit()
                     
-                    Text("Olá, ")
+                    Text("Olá, Guilherme")
                         .font(.system(size: 18))
                         .padding(.vertical, 20)
                 }
